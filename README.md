@@ -1,3 +1,12 @@
+I need to have the functionality of evgygor/logstash-output-influxdb where all the fields except the ones I exclude goes in to influxdb as properties of the event. However the repository evgygor/logstash-output-influxdb was not rebased against the logstash-plugin/logstash-output-influxdb for a long time. What I did was to fork logstash-plugin/logstash-output-influxdb and added the changes I needed. 
+
+Instead of specifying which fields to send in as data points to the database, this plugin will send in all fields, except the ones you exclude, as data points to the database.
+
+The property "data_points" is removed.
+The property "fields_to_skip" is added
+
+-----------------------------------------------------------------------------------------------------------
+
 # Logstash Plugin
 
 This is a plugin for [Logstash](https://github.com/elasticsearch/logstash).

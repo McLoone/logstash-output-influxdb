@@ -37,12 +37,9 @@ class LogStash::Outputs::InfluxDB < LogStash::Outputs::Base
   # Series name - supports sprintf formatting
   config :series, :validate => :string, :default => "logstash"
 
-  # Hash of key/value pairs representing data points to send to the named database
-  # Example: `{'column1' => 'value1', 'column2' => 'value2'}`
-  #
-  # Events for the same series will be batched together where possible
-  # Both keys and values support sprintf formatting
-  config :data_points, :validate => :hash, :default => {}, :required => true
+  # Array of keys to skip
+  # Example: `['column1', 'column2']`
+  config :keys_to_skip, :validate => :array, :default => [], :required => false
 
   # Allow the override of the `time` column in the event?
   #
@@ -127,7 +124,8 @@ class LogStash::Outputs::InfluxDB < LogStash::Outputs::Base
     event_hash = {}
     event_hash['name'] = event.sprintf(@series)
 
-    sprintf_points = Hash[@data_points.map {|k,v| [event.sprintf(k), event.sprintf(v)]}]
+    sprintf_points = event.to_hash
+    sprintf_points.delete_if{|k,v| @keys_to_skip.include?(k)} 
     if sprintf_points.has_key?('time')
       unless @allow_time_override
         logger.error("Cannot override value of time without 'allow_time_override'. Using event timestamp")
